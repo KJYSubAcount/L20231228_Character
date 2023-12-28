@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "EnhancedInputComponent.h"
 
 // Sets default values
 ABBC::ABBC()
@@ -44,5 +45,29 @@ void ABBC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	UEnhancedInputComponent* UEIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (UEIC)
+	{
+		UEIC->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ABBC::Jump);
+		UEIC->BindAction(IA_Jump, ETriggerEvent::Canceled, this, &ABBC::StopJumping);
+
+		UEIC->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABBC::Move);
+		UEIC->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ABBC::Look);
+	}
+
+}
+
+void ABBC::Move(const FInputActionValue& Value)
+{
+	FVector2D Dir = Value.Get<FVector2D>();
+	AddMovementInput(FVector(Dir.Y, Dir.X, 0));
+}
+
+void ABBC::Look(const FInputActionValue& Value)
+{
+	FVector2D Rotation = Value.Get<FVector2D>();
+
+	AddControllerYawInput(Rotation.X);
+	AddControllerPitchInput(Rotation.Y);
 }
 

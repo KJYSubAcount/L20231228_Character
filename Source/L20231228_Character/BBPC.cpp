@@ -3,3 +3,15 @@
 
 #include "BBPC.h"
 
+#include "EnhancedInputSubsystems.h"
+
+void ABBPC::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem< UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	if (SubSystem && DefaultIMC)
+	{
+		SubSystem->AddMappingContext(DefaultIMC, 0);
+	}
+}
