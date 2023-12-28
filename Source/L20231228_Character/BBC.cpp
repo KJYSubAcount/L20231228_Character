@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ABBC::ABBC()
@@ -60,7 +61,15 @@ void ABBC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ABBC::Move(const FInputActionValue& Value)
 {
 	FVector2D Dir = Value.Get<FVector2D>();
-	AddMovementInput(FVector(Dir.Y, Dir.X, 0));
+
+	FRotator CameraRotaion = GetControlRotation();
+	FRotator DirectionRotation = FRotator(0, CameraRotaion.Yaw, 0);
+
+	FVector ForwardVector = UKismetMathLibrary::GetForwardVector(DirectionRotation);
+	FVector RightVector = UKismetMathLibrary::GetRightVector(DirectionRotation);
+
+	AddMovementInput(ForwardVector, Dir.Y);
+	AddMovementInput(RightVector, Dir.X);
 }
 
 void ABBC::Look(const FInputActionValue& Value)
